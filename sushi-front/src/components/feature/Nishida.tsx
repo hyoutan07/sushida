@@ -72,12 +72,12 @@ const Nishida = () => {
     setCurrentWordIndex(0);
     setTimeLeft(TIMER);
     setIsCompleted(false);
-    setMessage(`${sushiList[0].japanese}`);
-  };
+    moveToNextWord();
+   };
 
   // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
-    const nextIndex = (currentWordIndex + 1) % sushiList.length;
+    const nextIndex = Math.floor(Math.random() * sushiList.length);
     setCurrentWordIndex(nextIndex);
     setTypedWord('');
     setMessage(`${sushiList[nextIndex].japanese}`);
@@ -108,7 +108,7 @@ const Nishida = () => {
       setMessage(`ゲーム終了！スコア: ${score}`);
     }
   }, [isGameStarted, timeLeft, isCompleted]);
-  
+
   // windowは最初からは読み込めないのでuseEffectを用いる
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
