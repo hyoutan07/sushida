@@ -1,20 +1,27 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { sushiList } from '@/utils/sushiList'; // 提供されたsushiListをインポート
-import { audioPaths } from '@/utils/audioPath'; // 提供されたaudioPathsをインポート
+import { sushiList } from '@/utils/sushiList';
+import { audioPaths } from '@/utils/audioPath';
+
+const TIMER = 60
 
 const Nishida = () => {
+  // 入力文字関係
   const [currentWordIndex, setCurrentWordIndex] = useState(0); // 現在の単語インデックス
   const [typedWord, setTypedWord] = useState(''); // 現在の入力
+  // タイマー
+  const [timeLeft, setTimeLeft] = useState(TIMER); // 残り時間
+  // 画面表示
   const [score, setScore] = useState(0); // スコア
-  const [timeLeft, setTimeLeft] = useState(60); // 残り時間
   const [correctKeyCount, setCorrectKeyCount] = useState(0); // 正しいキー入力数
   const [mistypedKeyCount, setMistypedKeyCount] = useState(0); // ミスタイプ数
   const [message, setMessage] = useState('スペースキーを押してゲーム開始！');
+  // ゲーム管理
   const [isGameStarted, setIsGameStarted] = useState(false); // ゲームが開始しているか
   const [isCompleted, setIsCompleted] = useState(false); // ゲームが終了したか
 
+  // Audio関数
   const playAudio = (type: 'correct' | 'miss' | 'typing') => {
     const audio = new Audio(audioPaths[type]);
     audio.play();
@@ -27,14 +34,14 @@ const Nishida = () => {
       }
       return;
     }
-
     if (isCompleted) return; // ゲームが終了していたら無視
 
-    const key = event.key;
+    const inputKey = event.key;
     const currentRomaji = sushiList[currentWordIndex].romaji[0]; // 最初のローマ字だけを使う
+    // TODO: 「ちょ」cho tyoのような2通りの入力問題は、リストで管理ではなく、正規表現とかでできそうと思ったため一旦後回し
 
     // 入力中の文字列を更新
-    const nextInput = typedWord + key;
+    const nextInput = typedWord + inputKey;
 
     // 正しい入力が部分一致するかチェック
     if (currentRomaji.startsWith(nextInput)) {
@@ -55,6 +62,7 @@ const Nishida = () => {
     }
   };
 
+  // ゲームスタート時の初期化関数
   const startGame = () => {
     setIsGameStarted(true);
     setTypedWord('');
@@ -62,11 +70,12 @@ const Nishida = () => {
     setCorrectKeyCount(0);
     setMistypedKeyCount(0);
     setCurrentWordIndex(0);
-    setTimeLeft(60);
+    setTimeLeft(TIMER);
     setIsCompleted(false);
     setMessage(`${sushiList[0].japanese}`);
   };
 
+  // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
     const nextIndex = (currentWordIndex + 1) % sushiList.length;
     setCurrentWordIndex(nextIndex);
@@ -74,13 +83,14 @@ const Nishida = () => {
     setMessage(`${sushiList[nextIndex].japanese}`);
   };
 
+  // リセット関数
   const handleReset = () => {
     setTypedWord('');
     setScore(0);
     setCorrectKeyCount(0);
     setMistypedKeyCount(0);
     setCurrentWordIndex(0);
-    setTimeLeft(60);
+    setTimeLeft(TIMER);
     setMessage('スペースキーを押してゲーム開始！');
     setIsGameStarted(false);
     setIsCompleted(false);
@@ -98,7 +108,8 @@ const Nishida = () => {
       setMessage(`ゲーム終了！スコア: ${score}`);
     }
   }, [isGameStarted, timeLeft, isCompleted]);
-
+  
+  // windowは最初からは読み込めないのでuseEffectを用いる
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -106,6 +117,7 @@ const Nishida = () => {
     };
   }, [isGameStarted, typedWord, isCompleted]);
 
+  // TODO: styleはchatGPTに本当に適当に任せた
   return (
     <div
       style={{
