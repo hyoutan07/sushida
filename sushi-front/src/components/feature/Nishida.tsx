@@ -17,6 +17,7 @@ const Nishida = () => {
   const [correctKeyCount, setCorrectKeyCount] = useState(0); // 正しいキー入力数
   const [mistypedKeyCount, setMistypedKeyCount] = useState(0); // ミスタイプ数
   const [message, setMessage] = useState('スペースかEnterキーを押してゲーム開始！');
+  const [showRomaji, setShowRomaji] = useState('');
   // ゲーム管理
   const [isGameStarted, setIsGameStarted] = useState(false); // ゲームが開始しているか
   const [isCompleted, setIsCompleted] = useState(false); // ゲームが終了したか
@@ -87,6 +88,7 @@ const Nishida = () => {
     setCurrentWordIndex(nextIndex);
     setTypedWord('');
     setMessage(`${sushiList[nextIndex].japanese}`);
+    setShowRomaji(`${sushiList[nextIndex].romaji[0]}`);
   };
 
   // リセット関数
@@ -98,6 +100,7 @@ const Nishida = () => {
     setCurrentWordIndex(0);
     setTimeLeft(TIMER);
     setMessage('スペースキーを押してゲーム開始！');
+    setShowRomaji('');
     setIsGameStarted(false);
     setIsCompleted(false);
   };
@@ -162,7 +165,7 @@ const Nishida = () => {
         }}
       >
         <span>
-          {sushiList[currentWordIndex].romaji[0].split('').map((char, index) => (
+          {showRomaji.split('').map((char, index) => (
             <span
               key={index}
               style={{
