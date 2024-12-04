@@ -28,32 +28,32 @@
 // ];
 
 export const sushiList = [
-  // {
-  //   japanese: "中退男",
-  //   hiragana: "ちゅうたいおとこ",
-  //   romaji: [
-  //     ["tyu", "chu", "tixyu", "tilyu"],
-  //     ["u"],
-  //     ["ta"],
-  //     ["i"],
-  //     ["o"],
-  //     ["to"],
-  //     ["ko"]
-  //   ]
-  // },
-  // {
-  //   japanese: "浪人男",
-  //   hiragana: "ろうにんおとこ",
-  //   romaji: [
-  //     ["ro"],
-  //     ["u"],
-  //     ["ni"],
-  //     ["nn"],
-  //     ["o"],
-  //     ["to"],
-  //     ["ko"],
-  //   ]
-  // },
+  {
+    japanese: "中退男",
+    hiragana: "ちゅうたいおとこ",
+    romaji: [
+      ["tyu", "chu", "tixyu", "tilyu"],
+      ["u"],
+      ["ta"],
+      ["i"],
+      ["o"],
+      ["to"],
+      ["ko"]
+    ]
+  },
+  {
+    japanese: "浪人男",
+    hiragana: "ろうにんおとこ",
+    romaji: [
+      ["ro"],
+      ["u"],
+      ["ni"],
+      ["nn"],
+      ["o"],
+      ["to"],
+      ["ko"],
+    ]
+  },
   {//showWordIndex
     japanese: "マンこ", 
     hiragana: "まんこ",
@@ -65,15 +65,15 @@ export const sushiList = [
       ]
     ]
   },
-  // {
-  //   japanese: "肥満",
-  //   hiragana: "ひまん",
-  //   romaji: [
-  //     ["hi"],
-  //     ["ma"],
-  //     ["nn"]
-  //   ]
-  // },
+  {
+    japanese: "肥満",
+    hiragana: "ひまん",
+    romaji: [
+      ["hi"],
+      ["ma"],
+      ["nn"]
+    ]
+  },
   {
     japanese: "バッカじゃないの",
     hiragana: "ばっかじゃないの",

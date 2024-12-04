@@ -127,8 +127,8 @@ const Nishida = () => {
 
   // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
-    // const nextIndex = Math.floor(Math.random() * sushiList.length);
-    const nextIndex = (showWordIndex + 1) % sushiList.length; // 順番通りに取得
+    const nextIndex = Math.floor(Math.random() * sushiList.length);
+    // const nextIndex = (showWordIndex + 1) % sushiList.length; // 順番通りに取得
     setShowWordIndex(nextIndex);
     setGroupAlpIndex(0);
     setTypedWord('');
@@ -227,7 +227,6 @@ const Nishida = () => {
           ))}
         </span>
       </div>
-      {/* デバック用 */} <h1 style={{ fontSize: '24px' }} >{typedWord} </h1>
       <p style={{ fontSize: '24px', marginTop: '20px', color: '#fff' }}>スコア: {score}</p>
       <p style={{ fontSize: '24px', marginTop: '20px', color: '#fff' }}>正しいキー入力数: {correctKeyCount}</p>
       <p style={{ fontSize: '24px', marginTop: '20px', color: '#fff' }}>ミスタイプ数: {mistypedKeyCount}</p>
