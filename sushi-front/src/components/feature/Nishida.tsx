@@ -8,19 +8,32 @@ const TIMER = 60;
 
 const Nishida = () => {
   // 入力文字関係
-  const [currentWordIndex, setCurrentWordIndex] = useState(0); // 現在の単語インデックス
+  const [showWordIndex, setShowWordIndex] = useState(0); // 現在の単語インデックス
   const [typedWord, setTypedWord] = useState(''); // 現在の入力
+
+  // Romaji候補判定に使用する変数
+  // GroupAlp GroupAlphabetの略
+  const [groupAlpIndex, setGroupAlpIndex] = useState(0); //　ひらがな候補リストのインデックス
+  const [typeGroupAlp, setTypeGroupAlp] = useState(""); // タイピングした候補文字列を一時保存
+  const [recordCandidateIndexList, setRecordCandidateIndexList] = useState<number[]>([]); // showRomajiでどのローマ字候補を通ったかを保存する変数
+  //showWordIndex[]
+  //  romaji
+  //  groupAlpIndex[]
+  //    candidateIndex[]
+
   // タイマー
   const [timeLeft, setTimeLeft] = useState(TIMER); // 残り時間
+
   // 画面表示
   const [score, setScore] = useState(0); // スコア
   const [correctKeyCount, setCorrectKeyCount] = useState(0); // 正しいキー入力数
   const [mistypedKeyCount, setMistypedKeyCount] = useState(0); // ミスタイプ数
   const [message, setMessage] = useState('スペースかEnterキーを押してゲーム開始！');
   const [showRomaji, setShowRomaji] = useState('');
+  
   // ゲーム管理
   const [isGameStarted, setIsGameStarted] = useState(false); // ゲームが開始しているか
-  const [isCompleted, setIsCompleted] = useState(false); // ゲームが終了したか
+  const [isGameCompleted, setIsGameCompleted] = useState(false); // ゲームが終了したか
 
   // Audio関数
   const playAudio = (type: 'correct' | 'miss' | 'typing') => {
@@ -28,6 +41,7 @@ const Nishida = () => {
     audio.play();
   };
 
+  // TODO: 後できれいにする
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!isGameStarted) {
       if (event.key === ' ' || event.key === 'Enter') {
@@ -38,32 +52,59 @@ const Nishida = () => {
 
     if (event.key === 'Escape') {
       handleReset();
+      return;
     }
 
+    if (isGameCompleted) return;
+
     const inputKey = event.key;
-    const currentRomaji = sushiList[currentWordIndex].romaji[0]; // 最初のローマ字だけを使う
-    // TODO: 「ちょ」cho tyoのような2通りの入力問題は、リストで管理ではなく、正規表現とかでできそうと思ったため一旦後回し
+    const currentGroupAlpList = sushiList[showWordIndex].romaji[groupAlpIndex]; // ローマ字の候補リスト
+
+    if (inputKey === ' ' || inputKey === 'Enter') return;
 
     // 入力中の文字列を更新
-    const nextInput = typedWord + inputKey;
+    const wordInputAll = typedWord + inputKey; // 全体の文字列 
+    const groupAlpInput = typeGroupAlp + inputKey; //候補入力の文字列 例: choko なら 「cho」, 「ko」の部分
 
-    if (isCompleted) return;
+    // groupAlpInputの入力の正解判定に使用
+    let isInputCorrect = false;
 
-    // 正しい入力が部分一致するかチェック
-    if (currentRomaji.startsWith(nextInput)) {
-      setTypedWord(nextInput);
-      setCorrectKeyCount((prev) => prev + 1);
-      playAudio('typing'); // 正しいキー入力時にタイピング音再生
+    for (let candidateIndex = 0; candidateIndex < currentGroupAlpList.length; candidateIndex++) {
+      const candidateGroupAlp = currentGroupAlpList[candidateIndex];
 
-      // 完全一致した場合
-      if (currentRomaji === nextInput) {
-        setScore((prev) => prev + 1);
-        playAudio('correct'); // 正解時に正解音再生
-        moveToNextWord();
+      // 正しい入力が部分一致するかチェック
+      if (candidateGroupAlp.startsWith(groupAlpInput)) {
+        setTypedWord(wordInputAll);
+        setTypeGroupAlp(groupAlpInput);
+        setCorrectKeyCount((prev) => prev + 1);
+        playAudio('typing');
+        isInputCorrect = true;
+
+        // ローマ字の候補によって、表示をリアルタイムに変更
+        const newCandidateIndexList = recordCandidateIndexList.map((index, j) => (j === groupAlpIndex ? candidateIndex : index))
+        const newShowRomaji = newCandidateIndexList.map((index, i) => sushiList[showWordIndex].romaji[i][index]).join('')
+        setRecordCandidateIndexList(newCandidateIndexList)
+        setShowRomaji(newShowRomaji)
+
+        // romajiCandidateが全て正しく入力されていたら、次のRomaji候補へ進む
+        if (groupAlpInput.length === candidateGroupAlp.length) {
+          setGroupAlpIndex((prev) => prev + 1)
+          setTypeGroupAlp("")
+
+          // 全単語の正解判定
+          if (groupAlpIndex + 1 === sushiList[showWordIndex].romaji.length) {
+            setScore((prev) => prev + 1);
+            playAudio('correct');
+            moveToNextWord();
+          }
+        }
+        // if文を通った時点で他の候補は判定不要
+        break;
       }
-    } else if (inputKey === ' ' || inputKey === 'Escape' || inputKey === 'Enter') {
-    } else {
-      // 間違ったキーが押された場合
+    }
+
+    // 間違ったキーが押された場合
+    if (!isInputCorrect) {
       setMistypedKeyCount((prev) => prev + 1);
       playAudio('miss'); // ミスタイプ時にエラー音再生
     }
@@ -76,19 +117,25 @@ const Nishida = () => {
     setScore(0);
     setCorrectKeyCount(0);
     setMistypedKeyCount(0);
-    setCurrentWordIndex(0);
+    setShowWordIndex(0);
+    setGroupAlpIndex(0);
     setTimeLeft(TIMER);
-    setIsCompleted(false);
+    setIsGameCompleted(false);
+    setTypeGroupAlp("")
     moveToNextWord();
   };
 
   // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
     const nextIndex = Math.floor(Math.random() * sushiList.length);
-    setCurrentWordIndex(nextIndex);
+    // const nextIndex = (showWordIndex + 1) % sushiList.length; // 順番通りに取得
+    setShowWordIndex(nextIndex);
+    setGroupAlpIndex(0);
     setTypedWord('');
     setMessage(`${sushiList[nextIndex].japanese}`);
-    setShowRomaji(`${sushiList[nextIndex].romaji[0]}`);
+    // setShowRomaji(`${sushiList[nextIndex].romaji}`);
+    setShowRomaji(sushiList[nextIndex].romaji.map(str => str[0]).join(''))
+    setRecordCandidateIndexList(Array(sushiList[nextIndex].romaji.length).fill(0)) // romajiの長さ分の0配列で初期化
   };
 
   // リセット関数
@@ -97,26 +144,28 @@ const Nishida = () => {
     setScore(0);
     setCorrectKeyCount(0);
     setMistypedKeyCount(0);
-    setCurrentWordIndex(0);
+    setShowWordIndex(0);
+    setGroupAlpIndex(0);
     setTimeLeft(TIMER);
     setMessage('スペースキーを押してゲーム開始！');
     setShowRomaji('');
     setIsGameStarted(false);
-    setIsCompleted(false);
+    setIsGameCompleted(false);
+    setTypeGroupAlp("")
   };
 
   // タイマー処理
   useEffect(() => {
-    if (!isGameStarted || isCompleted) return;
+    if (!isGameStarted || isGameCompleted) return;
 
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
     } else {
-      setIsCompleted(true);
+      setIsGameCompleted(true);
       setMessage(`ゲーム終了！スコア: ${score}`);
     }
-  }, [isGameStarted, timeLeft, isCompleted]);
+  }, [isGameStarted, timeLeft, isGameCompleted]);
 
   // windowは最初からは読み込めないのでuseEffectを用いる
   useEffect(() => {
@@ -124,7 +173,7 @@ const Nishida = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isGameStarted, typedWord, isCompleted]);
+  }, [isGameStarted, typedWord, isGameCompleted]);
 
   // TODO: styleはchatGPTに本当に適当に任せた
   return (
@@ -181,7 +230,7 @@ const Nishida = () => {
       <p style={{ fontSize: '24px', marginTop: '20px', color: '#fff' }}>スコア: {score}</p>
       <p style={{ fontSize: '24px', marginTop: '20px', color: '#fff' }}>正しいキー入力数: {correctKeyCount}</p>
       <p style={{ fontSize: '24px', marginTop: '20px', color: '#fff' }}>ミスタイプ数: {mistypedKeyCount}</p>
-      {isCompleted && (
+      {isGameCompleted && (
         <button
           onClick={handleReset}
           style={{
