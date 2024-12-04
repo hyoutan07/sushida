@@ -63,10 +63,10 @@ const Nishida = () => {
 
     // fixme: nが優先されてnnが許容されない
     // 特別な処理: nの後にnnを許容
-    if (nextInputAll.endsWith('n') && inputKey === 'n' && candidateIndex > 0 && candidateIndex < sushiList[currentWordIndex].romaji.length - 1) {
+    if (nextInputAll.endsWith('nn') && !nextInputAll.endsWith('nnn') && candidateIndex > 0 && candidateIndex < sushiList[currentWordIndex].romaji.length - 1) {
       const previousCandidateIndex = candidateIndex - 1
       const previousRomajiCandidates = sushiList[currentWordIndex].romaji[previousCandidateIndex]; // 前回のローマ字の候補リスト
-      
+
       for (let romajiIndex = 0; romajiIndex < previousRomajiCandidates.length; romajiIndex++) {
         console.log(`候補 ${romajiIndex}: ${previousRomajiCandidates[romajiIndex]}`);
         const romajiCandidate = previousRomajiCandidates[romajiIndex];
@@ -155,7 +155,8 @@ const Nishida = () => {
 
   // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
-    const nextIndex = Math.floor(Math.random() * sushiList.length);
+    // const nextIndex = Math.floor(Math.random() * sushiList.length);
+    const nextIndex = (currentWordIndex + 1) % sushiList.length; // 順番通りに取得
     setCurrentWordIndex(nextIndex);
     setCandidateIndex(0);
     setTypedWord('');
