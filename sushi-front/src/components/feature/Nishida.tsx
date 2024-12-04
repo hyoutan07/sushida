@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { sushiList } from '@/utils/sushiList';
 import { audioPaths } from '@/utils/audioPath';
 
-const TIMER = 60
+const TIMER = 60;
 
 const Nishida = () => {
   // 入力文字関係
@@ -16,7 +16,8 @@ const Nishida = () => {
   const [score, setScore] = useState(0); // スコア
   const [correctKeyCount, setCorrectKeyCount] = useState(0); // 正しいキー入力数
   const [mistypedKeyCount, setMistypedKeyCount] = useState(0); // ミスタイプ数
-  const [message, setMessage] = useState('スペースキーを押してゲーム開始！');
+  const [message, setMessage] = useState('スペースかEnterキーを押してゲーム開始！');
+  const [showRomaji, setShowRomaji] = useState('');
   // ゲーム管理
   const [isGameStarted, setIsGameStarted] = useState(false); // ゲームが開始しているか
   const [isCompleted, setIsCompleted] = useState(false); // ゲームが終了したか
@@ -29,12 +30,15 @@ const Nishida = () => {
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!isGameStarted) {
-      if (event.key === ' ') {
+      if (event.key === ' ' || event.key === 'Enter') {
         startGame();
       }
       return;
     }
-    if (isCompleted) return; // ゲームが終了していたら無視
+
+    if (event.key === 'Escape') {
+      handleReset();
+    }
 
     const inputKey = event.key;
     const currentRomaji = sushiList[currentWordIndex].romaji[0]; // 最初のローマ字だけを使う
@@ -42,6 +46,8 @@ const Nishida = () => {
 
     // 入力中の文字列を更新
     const nextInput = typedWord + inputKey;
+
+    if (isCompleted) return;
 
     // 正しい入力が部分一致するかチェック
     if (currentRomaji.startsWith(nextInput)) {
@@ -55,6 +61,7 @@ const Nishida = () => {
         playAudio('correct'); // 正解時に正解音再生
         moveToNextWord();
       }
+    } else if (inputKey === ' ' || inputKey === 'Escape' || inputKey === 'Enter') {
     } else {
       // 間違ったキーが押された場合
       setMistypedKeyCount((prev) => prev + 1);
@@ -72,15 +79,16 @@ const Nishida = () => {
     setCurrentWordIndex(0);
     setTimeLeft(TIMER);
     setIsCompleted(false);
-    setMessage(`${sushiList[0].japanese}`);
+    moveToNextWord();
   };
 
   // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
-    const nextIndex = (currentWordIndex + 1) % sushiList.length;
+    const nextIndex = Math.floor(Math.random() * sushiList.length);
     setCurrentWordIndex(nextIndex);
     setTypedWord('');
     setMessage(`${sushiList[nextIndex].japanese}`);
+    setShowRomaji(`${sushiList[nextIndex].romaji[0]}`);
   };
 
   // リセット関数
@@ -92,6 +100,7 @@ const Nishida = () => {
     setCurrentWordIndex(0);
     setTimeLeft(TIMER);
     setMessage('スペースキーを押してゲーム開始！');
+    setShowRomaji('');
     setIsGameStarted(false);
     setIsCompleted(false);
   };
@@ -108,7 +117,7 @@ const Nishida = () => {
       setMessage(`ゲーム終了！スコア: ${score}`);
     }
   }, [isGameStarted, timeLeft, isCompleted]);
-  
+
   // windowは最初からは読み込めないのでuseEffectを用いる
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -156,7 +165,7 @@ const Nishida = () => {
         }}
       >
         <span>
-          {sushiList[currentWordIndex].romaji[0].split('').map((char, index) => (
+          {showRomaji.split('').map((char, index) => (
             <span
               key={index}
               style={{
