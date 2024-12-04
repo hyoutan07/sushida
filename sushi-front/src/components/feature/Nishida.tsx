@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { sushiList } from '@/utils/sushiList';
 import { audioPaths } from '@/utils/audioPath';
 
-const TIMER = 6;
+const TIMER = 60;
 
 const Nishida = () => {
   // 入力文字関係
@@ -61,7 +61,7 @@ const Nishida = () => {
         playAudio('correct'); // 正解時に正解音再生
         moveToNextWord();
       }
-    } else if (inputKey === ' ' || inputKey === 'Escape' || inputKey === 'Enter'){
+    } else if (inputKey === ' ' || inputKey === 'Escape' || inputKey === 'Enter') {
     } else {
       // 間違ったキーが押された場合
       setMistypedKeyCount((prev) => prev + 1);
@@ -80,7 +80,7 @@ const Nishida = () => {
     setTimeLeft(TIMER);
     setIsCompleted(false);
     moveToNextWord();
-   };
+  };
 
   // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
