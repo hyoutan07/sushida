@@ -14,14 +14,12 @@ export async function POST(req: NextRequest) {
       currentContent = fs.readFileSync(sushiListPath, 'utf8');
     }
 
-    // sushiListの中身を探す
     let sushiList = [];
 
     if (currentContent.includes('export const sushiList = [')) {
       const sushiListString = currentContent.match(/export const sushiList = \[([\s\S]*?)\];/)?.[1];
       if (sushiListString) {
         try {
-          // JSON風のフォーマットに変換してパースする
           sushiList = eval(`[${sushiListString}]`);
         } catch (e) {
           console.error('既存のsushiListのパース中にエラーが発生しました:', e);
@@ -30,14 +28,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 新しいエントリを追加
     sushiList.push({
       japanese,
       hiragana,
       romaji,
     });
 
-    // 新しい内容を組み立て
+    //TODO: evalの回避
     // 新しい内容を組み立て
     let updatedContent = `export const sushiList = [\n`;
     sushiList.forEach((item: { romaji: string[][]; japanese: string; hiragana: string; }) => {
@@ -49,8 +46,6 @@ export async function POST(req: NextRequest) {
     });
     updatedContent += `];`;
 
-
-    // ファイルを上書き
     fs.writeFileSync(sushiListPath, updatedContent, 'utf8');
 
     return NextResponse.json({ message: 'sushiList.tsが正常に更新されました！' });
