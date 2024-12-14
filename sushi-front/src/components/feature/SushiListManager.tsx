@@ -1,27 +1,26 @@
 'use client';
 
-import { hiraToRomajiList } from '@/utils/hiraToRomajiList';
 import React, { useState, useEffect } from 'react';
+import createSushiList from './CreateSushiList';
 
-interface Sushi {
+interface SushiList {
   japanese: string;
   hiragana: string;
   romaji: string[][];
 }
 
 const SushiListManager = () => {
-  const [sushiList, setSushiList] = useState<Sushi[]>([]);
+  const [sushiList, setSushiList] = useState<SushiList[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingJapanese, setEditingJapanese] = useState<string>('');
   const [editingHiragana, setEditingHiragana] = useState<string>('');
 
-  // 初回レンダリング時に寿司リストをAPIから取得
   useEffect(() => {
     const fetchSushiList = async () => {
       try {
         const response = await fetch('/api/manageSushiList');
         if (!response.ok) throw new Error('寿司リストの取得に失敗しました');
-        const data: Sushi[] = await response.json();
+        const data: SushiList[] = await response.json();
         setSushiList(data);
       } catch (error) {
         console.error('エラー:', error);
@@ -31,50 +30,17 @@ const SushiListManager = () => {
     fetchSushiList();
   }, []);
 
-  // 編集ボタンのクリック処理
   const handleEditClick = (index: number) => {
     setEditingIndex(index);
     setEditingJapanese(sushiList[index].japanese);
     setEditingHiragana(sushiList[index].hiragana);
   };
-
-  const createSushiList = (japanese: string, hiragana: string): Sushi => {
-   let remainedHiragana = hiragana;
-   const romajiList: string[][] = [];
  
-   while (remainedHiragana.length > 0) {
-     let isMatched = false;
- 
-     for (const key in hiraToRomajiList) {
-       if (remainedHiragana.startsWith(key)) {
-         romajiList.push(hiraToRomajiList[key]);
-         remainedHiragana = remainedHiragana.slice(key.length);
-         isMatched = true;
-         break;
-       }
-     }
- 
-     // TODO: 候補にない時、すでに登録されているときはエラーを吐かせる
-     if (!isMatched) {
-       throw new Error(`未対応のひらがなが含まれています: ${remainedHiragana}`);
-     }
-   }
- 
-   return {
-     japanese,
-     hiragana,
-     romaji: romajiList,
-   };
- };
- 
-  // 保存ボタンのクリック処理
   const handleSaveClick = async () => {
    if (editingIndex !== null) {
      try {
-       // 新しい Sushi データを生成
        const updatedSushi = createSushiList(editingJapanese, editingHiragana);
  
-       // PUTリクエストをAPIに送信してデータを更新
        const response = await fetch('/api/manageSushiList', {
          method: 'PUT',
          headers: {
@@ -85,7 +51,6 @@ const SushiListManager = () => {
  
        if (!response.ok) throw new Error('寿司リストの更新に失敗しました');
  
-       // UI上の状態を更新
        const updatedSushiList = [...sushiList];
        updatedSushiList[editingIndex] = updatedSushi;
        setSushiList(updatedSushiList);
@@ -97,10 +62,8 @@ const SushiListManager = () => {
  };
  
 
-  // 削除ボタンのクリック処理
   const handleDeleteClick = async (index: number) => {
     try {
-      // DELETEリクエストをAPIに送信してデータを削除
       const response = await fetch('/api/manageSushiList', {
         method: 'DELETE',
         headers: {
@@ -111,7 +74,6 @@ const SushiListManager = () => {
 
       if (!response.ok) throw new Error('寿司リストの削除に失敗しました');
 
-      // UI上の状態を更新
       const updatedSushiList = sushiList.filter((_, i) => i !== index);
       setSushiList(updatedSushiList);
     } catch (error) {

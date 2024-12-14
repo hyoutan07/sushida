@@ -1,48 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { hiraToRomajiList } from '@/utils/hiraToRomajiList';
-
-interface newSushiList {
-  japanese: string;
-  hiragana: string;
-  romaji: string[][];
-}
-
-const createSushiList = (japanese: string, hiragana: string): newSushiList => {
-  let remainedHiragana = hiragana;
-  const romajiList: string[][] = [];
-
-  while (remainedHiragana.length > 0) {
-    let isMatched = false;
-
-    for (const key in hiraToRomajiList) {
-      if (remainedHiragana.startsWith(key)) {
-        romajiList.push(hiraToRomajiList[key]);
-        remainedHiragana = remainedHiragana.slice(key.length);
-        isMatched = true;
-        break;
-      }
-    }
-    // TODO: 候補にない時、すでに登録されているときはエラーを吐かせる
-    if (!isMatched) {
-    }
-  }
-
-  return {
-    japanese,
-    hiragana,
-    romaji: romajiList,
-  };
-};
+import createSushiList from './CreateSushiList';
 
 const AddWord = () => {
-  // 入力値を管理するstate
   const [inputJapanese, setInputJapanese] = useState<string>('');
   const [inputHiragana, setInputHiragana] = useState<string>('');
-  const [newSushiList, setNewSushiList] = useState<newSushiList | null>(null);
 
-  //入力の変更を監視
   const handleJapaneseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputJapanese(e.target.value);
   };
@@ -51,15 +15,9 @@ const AddWord = () => {
   };
 
   const handleButtonClick  = async () => {
-    console.log("入力されたJap:", inputJapanese);
-    console.log("入力されたHira:", inputHiragana);
-
-    // 変換結果を取得してstateに保存
     const result = createSushiList(inputJapanese, inputHiragana);
-    setNewSushiList(result);
 
-   // APIルートにPOSTリクエストを送信してファイルを更新
-   try {
+    try {
       const response = await fetch('/api/updateSushiList', {
          method: 'POST',
          headers: {
@@ -67,17 +25,15 @@ const AddWord = () => {
          },
          body: JSON.stringify(result),
       });
-
       if (!response.ok) {
          throw new Error('ファイルの更新に失敗しました。');
       }
-
       const data = await response.json();
       console.log(data.message);
-   } catch (error) {
+    } catch (error) {
       console.error('エラー:', error);
-   }
-   };
+    }
+  };
 
   return (
     <div className="flex items-center justify-center">
@@ -102,22 +58,6 @@ const AddWord = () => {
         >
           送信
         </button>
-
-        {newSushiList && (
-          <div className="mt-4">
-            <h3>変換結果:</h3>
-            <p>日本語: {newSushiList.japanese}</p>
-            <p>ひらがな: {newSushiList.hiragana}</p>
-            <p>ローマ字変換:</p>
-            <ul>
-              {newSushiList.romaji.map((romajiList, index) => (
-                <li key={index}>
-                  {romajiList.join(', ')}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
     </div>
   );
