@@ -1,5 +1,6 @@
 'use client';
 
+import { hiraToRomajiList } from '@/utils/hiraToRomajiList';
 import React, { useState, useEffect } from 'react';
 
 interface Sushi {
@@ -37,37 +38,64 @@ const SushiListManager = () => {
     setEditingHiragana(sushiList[index].hiragana);
   };
 
+  const createSushiList = (japanese: string, hiragana: string): Sushi => {
+   let remainedHiragana = hiragana;
+   const romajiList: string[][] = [];
+ 
+   while (remainedHiragana.length > 0) {
+     let isMatched = false;
+ 
+     for (const key in hiraToRomajiList) {
+       if (remainedHiragana.startsWith(key)) {
+         romajiList.push(hiraToRomajiList[key]);
+         remainedHiragana = remainedHiragana.slice(key.length);
+         isMatched = true;
+         break;
+       }
+     }
+ 
+     // TODO: 候補にない時、すでに登録されているときはエラーを吐かせる
+     if (!isMatched) {
+       throw new Error(`未対応のひらがなが含まれています: ${remainedHiragana}`);
+     }
+   }
+ 
+   return {
+     japanese,
+     hiragana,
+     romaji: romajiList,
+   };
+ };
+ 
   // 保存ボタンのクリック処理
   const handleSaveClick = async () => {
-    if (editingIndex !== null) {
-      try {
-        const updatedSushi = {
-          ...sushiList[editingIndex],
-          japanese: editingJapanese,
-          hiragana: editingHiragana,
-        };
-
-        // PUTリクエストをAPIに送信してデータを更新
-        const response = await fetch('/api/manageSushiList', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ index: editingIndex, updatedSushi }),
-        });
-
-        if (!response.ok) throw new Error('寿司リストの更新に失敗しました');
-
-        // UI上の状態を更新
-        const updatedSushiList = [...sushiList];
-        updatedSushiList[editingIndex] = updatedSushi;
-        setSushiList(updatedSushiList);
-        setEditingIndex(null);
-      } catch (error) {
-        console.error('エラー:', error);
-      }
-    }
-  };
+   if (editingIndex !== null) {
+     try {
+       // 新しい Sushi データを生成
+       const updatedSushi = createSushiList(editingJapanese, editingHiragana);
+ 
+       // PUTリクエストをAPIに送信してデータを更新
+       const response = await fetch('/api/manageSushiList', {
+         method: 'PUT',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({ index: editingIndex, updatedSushi }),
+       });
+ 
+       if (!response.ok) throw new Error('寿司リストの更新に失敗しました');
+ 
+       // UI上の状態を更新
+       const updatedSushiList = [...sushiList];
+       updatedSushiList[editingIndex] = updatedSushi;
+       setSushiList(updatedSushiList);
+       setEditingIndex(null);
+     } catch (error) {
+       console.error('エラー:', error);
+     }
+   }
+ };
+ 
 
   // 削除ボタンのクリック処理
   const handleDeleteClick = async (index: number) => {
