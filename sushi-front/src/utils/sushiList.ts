@@ -9,4 +9,9 @@ export const sushiList = [
     hiragana: 'わだかまり',
     romaji: [['wa'], ['da'], ['ka', 'ca'], ['ma'], ['ri']]
   },
+  {
+    japanese: '悪口',
+    hiragana: 'わるぐち',
+    romaji: [['wa'], ['ru'], ['gu'], ['ti', 'chi']]
+  },
 ];

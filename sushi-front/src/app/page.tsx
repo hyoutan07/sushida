@@ -1,13 +1,11 @@
-import AddWord from "@/components/feature/AddWord";
+import Header from "@/components/feature/Header";
 import Nishida from "@/components/feature/Nishida";
-import SushiListManager from "@/components/feature/SushiListManager";
 
 export default function Home() {
   return (
     <div>
+      <Header />
       <Nishida></Nishida>
-      <AddWord></AddWord>
-      <SushiListManager></SushiListManager>
     </div>
   );
 }
