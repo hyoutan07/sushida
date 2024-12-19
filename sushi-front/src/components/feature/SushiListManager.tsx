@@ -14,6 +14,7 @@ const SushiListManager = () => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingJapanese, setEditingJapanese] = useState<string>('');
   const [editingHiragana, setEditingHiragana] = useState<string>('');
+  const [alertMessage, setAlertMessage] = useState<string>(''); 
 
   useEffect(() => {
     const fetchSushiList = async () => {
@@ -39,7 +40,7 @@ const SushiListManager = () => {
   const handleSaveClick = async () => {
    if (editingIndex !== null) {
      try {
-       const updatedSushi = createSushiList(editingJapanese, editingHiragana);
+       const updatedSushi = createSushiList(editingJapanese, editingHiragana,setAlertMessage);
  
        const response = await fetch('/api/manageSushiList', {
          method: 'PUT',
@@ -86,7 +87,7 @@ const SushiListManager = () => {
       <h2>Sushi List Manager</h2>
       <ul>
         {sushiList.length > 0 ? (
-          sushiList.map((sushi, index) => (
+          sushiList.map((sushiList, index) => (
             <li key={index} className="mb-4">
               {editingIndex === index ? (
                <div className="flex items-start gap-4 mb-4">
@@ -115,11 +116,12 @@ const SushiListManager = () => {
                    >
                      キャンセル
                    </button>
+                  {alertMessage && <div className="text-red-500">{alertMessage}</div>}
                  </div>
                </div>
               ) : (
                 <div>
-                  <span className="mr-4">{sushi.japanese}</span>
+                  <span className="mr-4">{sushiList.japanese}</span>
                   <button
                     onClick={() => handleEditClick(index)}
                     className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700 mr-2"

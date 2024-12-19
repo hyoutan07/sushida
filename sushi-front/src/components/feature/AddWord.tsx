@@ -6,6 +6,7 @@ import createSushiList from './CreateSushiList';
 const AddWord = () => {
   const [inputJapanese, setInputJapanese] = useState<string>('');
   const [inputHiragana, setInputHiragana] = useState<string>('');
+  const [alertMessage, setAlertMessage] = useState<string>(''); 
 
   const handleJapaneseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputJapanese(e.target.value);
@@ -15,7 +16,7 @@ const AddWord = () => {
   };
 
   const handleButtonClick  = async () => {
-    const result = createSushiList(inputJapanese, inputHiragana);
+    const newSushi = createSushiList(inputJapanese, inputHiragana, setAlertMessage);
 
     try {
       const response = await fetch('/api/updateSushiList', {
@@ -23,7 +24,7 @@ const AddWord = () => {
          headers: {
          'Content-Type': 'application/json',
          },
-         body: JSON.stringify(result),
+         body: JSON.stringify(newSushi),
       });
       if (!response.ok) {
          throw new Error('ファイルの更新に失敗しました。');
@@ -58,6 +59,7 @@ const AddWord = () => {
         >
           送信
         </button>
+        {alertMessage && <div className="text-red-500">{alertMessage}</div>}
       </div>
     </div>
   );

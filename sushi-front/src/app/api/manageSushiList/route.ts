@@ -21,7 +21,15 @@ export async function PUT(req: NextRequest) {
     if (index >= 0 && index < sushiList.length) {
       sushiList[index] = updatedSushi;
 
-      const updatedContent = `export const sushiList = ${JSON.stringify(sushiList, null, 2)};`;
+      let updatedContent = `export const sushiList = [\n`;
+      sushiList.forEach((item: { romaji: string[][]; japanese: string; hiragana: string; }) => {
+      const formattedRomaji = item.romaji
+        .map((innerArray: string[]) => `[${innerArray.map((value: string) => `'${value}'`).join(', ')}]`)
+        .join(', ');
+  
+      updatedContent += `  {\n    japanese: '${item.japanese}',\n    hiragana: '${item.hiragana}',\n    romaji: [${formattedRomaji}]\n  },\n`;
+      });
+      updatedContent += `];`;
       fs.writeFileSync(sushiListPath, updatedContent, 'utf8');
 
       return NextResponse.json({ message: 'sushiListが正常に更新されました' });

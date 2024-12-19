@@ -823,4 +823,5 @@ export const hiraToRomajiList: { [key: string]: string[] } = {
 ゅ: ['xyu','lyu'],
 ょ: ['xyo','lyo'],
 ゎ: ['xwa','lwa'],
+ー: ['-'],
 };
