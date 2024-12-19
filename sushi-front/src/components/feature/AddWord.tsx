@@ -31,6 +31,10 @@ const AddWord = () => {
       }
       const data = await response.json();
       console.log(data.message);
+
+      setInputJapanese('');
+      setInputHiragana('');
+
     } catch (error) {
       console.error('エラー:', error);
     }

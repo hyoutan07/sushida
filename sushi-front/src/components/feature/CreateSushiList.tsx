@@ -25,15 +25,16 @@ const createSushiList = (japanese: string, hiragana: string, setAlertMessage: (m
 				break;
 			}
 		}
-		// TODO: 候補にない時、すでに登録されているときはエラーを吐かせる
+
 		if (!isMatched) {
 			const errorMessage = `ひらがなを入力してください。「${remainedHiragana[0]}」が無効です`;
       	setAlertMessage(errorMessage);
-			// remainedHiragana = '';
 			throw new Error(errorMessage);
 		}
 	}
- 
+	
+	const completeMessage = `登録完了`;
+	setAlertMessage(completeMessage);
 	return {
 		japanese,
 		hiragana,
