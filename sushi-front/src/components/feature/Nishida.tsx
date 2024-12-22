@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { sushiList } from "@/utils/sushiList";
 import { audioPaths } from "@/utils/audioPath";
+import Image from "next/image";
 
 const TIMER = 60;
 
@@ -196,7 +197,77 @@ const Nishida = () => {
       <p className="text-2xl font-bold text-white my-5">
         残り時間: {timeLeft}秒
       </p>
-      <div>TODO:アニメーション</div>
+      <div className="m-5 p-5 flex gap-8 justify-center items-center">
+        <div>
+          サーヤ
+          <Image
+            src="/saya.png"
+            width={200}
+            height={200}
+            alt="Picture of the author"
+          />
+        </div>
+        <div>
+          <section className="wrapper">
+            <div className="flex loop loop_right_double">
+              <Image
+                src="/belt.png"
+                alt="scrolling"
+                width={2000}
+                height={150}
+                className="h-[150px] w-[1000px]"
+              />
+              <Image
+                src="/belt.png"
+                alt="scrolling"
+                width={2000}
+                height={150}
+                className="h-[150px] w-[1000px]"
+              />
+              <Image
+                src="/belt.png"
+                alt="scrolling"
+                width={2000}
+                height={150}
+                className="h-[150px] w-[1000px]"
+              />
+            </div>
+            <div className="flex loop loop_right_double">
+              <Image
+                src="/belt.png"
+                alt="scrolling"
+                width={2000}
+                height={150}
+                className="h-[150px] w-[1000px]"
+              />
+              <Image
+                src="/belt.png"
+                alt="scrolling"
+                width={2000}
+                height={150}
+                className="h-[150px] w-[1000px]"
+              />
+              <Image
+                src="/belt.png"
+                alt="scrolling"
+                width={2000}
+                height={150}
+                className="h-[150px] w-[1000px]"
+              />
+            </div>
+          </section>
+        </div>
+        <div>
+          ニシダ
+          <Image
+            src="/nishida.png"
+            width={200}
+            height={200}
+            alt="Picture of the author"
+          />
+        </div>
+      </div>
+
       <div className="p-10 border-8 border-white rounded-xl bg-gray-500">
         <p className="text-3xl font-bold text-white my-5 break-words">
           {message}

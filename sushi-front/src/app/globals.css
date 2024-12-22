@@ -70,3 +70,75 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.conveyor-belt {
+  @apply flex h-full;
+  animation: scroll-left 5s linear infinite;
+  width: 200%; /* コンテンツを2回繰り返す */
+  background-color: blue;
+}
+
+.wrapper {
+  display: flex;
+  width: 400px;
+  background: #55c500;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+@keyframes loop_animation_right {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes loop_animation_left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes loop_animation_left_double {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes loop_animation_right_double {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.loop_right {
+  animation: loop_animation_right 3s linear infinite;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.loop_left {
+  animation: loop_animation_left 3s linear infinite;
+  width: 100%;
+}
+
+.loop_left_double {
+  animation: loop_animation_left_double 3s linear infinite;
+  white-space: nowrap;
+}
+
+.loop_right_double {
+  animation: loop_animation_right_double 3s linear infinite;
+  white-space: nowrap;
+}
