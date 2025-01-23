@@ -1,6 +1,6 @@
-import { QuestionItem } from "@/types/question";
+import { ImageItem } from "@/types/image";
 
-export const questionItemList: QuestionItem[] = [
+export const bombImageItemList: ImageItem[] = [
   {
     name: "unko",
     path: "/animations/unko.jpg",

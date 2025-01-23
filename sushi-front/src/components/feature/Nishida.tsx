@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { sushiList } from "@/utils/sushiList";
 import { audioPaths } from "@/utils/audioPath";
 import Image from "next/image";
-import { questionItemList } from "@/consts/questionItemList";
+import { bombImageItemList } from "@/consts/bombImageItemList";
 
-const TIMER = 60;
-const DEFAULT_ANIMATION_TIME = 5;
+const TIMER = 13; // 1ゲームのゲーム時間
+const DEFAULT_ANIMATION_TIME = 5; // 1つの問題の時間
 
 const Nishida = () => {
   // 入力文字関係
@@ -43,12 +43,9 @@ const Nishida = () => {
   const [isGameStarted, setIsGameStarted] = useState(false); // ゲームが開始しているか
   const [isGameCompleted, setIsGameCompleted] = useState(false); // ゲームが終了したか
 
-  // 出題する問題
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0); // 現在出題している問題のインデックス
-
   // アニメーション任意時間実行
   const [animationTime, setAnimationTime] = useState(DEFAULT_ANIMATION_TIME); // デフォルトの時間（秒）
-  const [animationKey, setAnimationKey] = useState(0); // アニメーションの再実行用キー
+  const [bombImageIndex, setBombImageIndex] = useState(0); // 爆弾イメージリストのインデックス (アニメーションの再実行のkeyに指定)
 
   // Audio関数
   const playAudio = (type: "correct" | "miss" | "typing") => {
@@ -74,7 +71,6 @@ const Nishida = () => {
 
     const inputKey = event.key;
     const currentGroupAlpList = sushiList[showWordIndex].romaji[groupAlpIndex]; // ローマ字の候補リスト
-    console.log("チェック機構 showWordIndex: ", showWordIndex);
 
     if (inputKey === " " || inputKey === "Enter") return;
 
@@ -84,7 +80,6 @@ const Nishida = () => {
 
     // groupAlpInputの入力の正解判定に使用
     let isInputCorrect = false;
-    console.log("入力文字:", wordInputAll);
 
     for (
       let candidateIndex = 0;
@@ -92,7 +87,6 @@ const Nishida = () => {
       candidateIndex++
     ) {
       const candidateGroupAlp = currentGroupAlpList[candidateIndex];
-      console.log("チェック機構 アルファベット候補:", candidateGroupAlp);
 
       // 正しい入力が部分一致するかチェック
       if (candidateGroupAlp.startsWith(groupAlpInput)) {
@@ -165,14 +159,8 @@ const Nishida = () => {
     setRecordCandidateIndexList(
       Array(sushiList[nextIndex].romaji.length).fill(0)
     ); // romajiの長さ分の0配列で初期化
-    setAnimationKey((prevKey) => (prevKey + 1) % questionItemList.length); //画像の個数分animationkeyを変更することでアニメーション再スタート
+    setBombImageIndex((prevKey) => (prevKey + 1) % bombImageItemList.length); //animationKeyを変更することでアニメーション再スタート
     setAnimationTimeLeft(0);
-
-    console.log(
-      "moveToNextWord アルファベット候補:",
-      sushiList[nextIndex].romaji[0]
-    );
-    console.log("moveToNextWord内部 showWordIndex: ", showWordIndex);
   };
 
   // リセット関数
@@ -191,7 +179,7 @@ const Nishida = () => {
     setTypeGroupAlp("");
   };
 
-  // タイマー処理
+  // タイマー処理：ゲーム自体のタイマー 　長めの時間を計測
   useEffect(() => {
     if (!isGameStarted || isGameCompleted) return;
 
@@ -212,25 +200,20 @@ const Nishida = () => {
     };
   }, [isGameStarted, typedWord, isGameCompleted, showWordIndex]);
 
-  // 出題アイテムタイマー
+  // 出題アイテムタイマー処理：1つのワードにかけられる時間を計測
   useEffect(() => {
     if (!isGameStarted || isGameCompleted) return;
 
     if (animationTimeLeft < DEFAULT_ANIMATION_TIME) {
-      // const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
-      // return () => clearTimeout(timer);
       const timer = setTimeout(() => {
-        // console.log("animationTimeLeft", animationTimeLeft);
         setAnimationTimeLeft((prev) => prev + 1);
       }, 1000);
       return () => clearTimeout(timer);
     } else {
       moveToNextWord();
-      console.log("出題タイマー内：moveToNextWord()");
     }
   }, [isGameStarted, animationTimeLeft, isGameCompleted]);
 
-  // TODO: styleはchatGPTに本当に適当に任せた
   return (
     <div className="text-center mt-12 max-w-3xl mx-auto p-5 rounded-2xl bg-gradient-to-br from-pink-300 to-pink-200 shadow-lg">
       <h1 className="text-4xl font-bold text-white">西打</h1>
@@ -250,7 +233,7 @@ const Nishida = () => {
         <div className="relative w-full">
           <div className="w-full h-20 bg-gray-200 shadow-2xl"></div>
           <div
-            key={animationKey} // アニメーションを再実行するためのキー
+            key={bombImageIndex} // アニメーションを再実行するためのキー
             className="absolute top-4 z-30"
             style={{
               animation: `roll-in-left 0.6s ease both, scroll-item ${animationTime}s linear 0.6s, roll-out-right 0.6s ease ${
@@ -258,9 +241,9 @@ const Nishida = () => {
               }s`,
             }}
           >
-            {isGameStarted ? (
+            {isGameStarted && !isGameCompleted ? (
               <Image
-                src={`${questionItemList[animationKey].path}`}
+                src={`${bombImageItemList[bombImageIndex].path}`}
                 width={100}
                 height={100}
                 alt="Picture of the author"

@@ -1,4 +1,4 @@
-export type QuestionItem = {
+export type ImageItem = {
   name: string;
   path: string;
 };
