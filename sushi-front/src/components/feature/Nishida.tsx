@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 import { sushiList } from "@/utils/sushiList";
 import { audioPaths } from "@/utils/audioPath";
 import Image from "next/image";
+import { questionItemList } from "@/consts/questionItemList";
 
 const TIMER = 60;
+const DEFAULT_ANIMATION_TIME = 5;
 
 const Nishida = () => {
   // 入力文字関係
@@ -26,6 +28,7 @@ const Nishida = () => {
 
   // タイマー
   const [timeLeft, setTimeLeft] = useState(TIMER); // 残り時間
+  const [animationTimeLeft, setAnimationTimeLeft] = useState(0); //アニメーションタイマー監視用
 
   // 画面表示
   const [score, setScore] = useState(0); // スコア
@@ -39,6 +42,13 @@ const Nishida = () => {
   // ゲーム管理
   const [isGameStarted, setIsGameStarted] = useState(false); // ゲームが開始しているか
   const [isGameCompleted, setIsGameCompleted] = useState(false); // ゲームが終了したか
+
+  // 出題する問題
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0); // 現在出題している問題のインデックス
+
+  // アニメーション任意時間実行
+  const [animationTime, setAnimationTime] = useState(DEFAULT_ANIMATION_TIME); // デフォルトの時間（秒）
+  const [animationKey, setAnimationKey] = useState(0); // アニメーションの再実行用キー
 
   // Audio関数
   const playAudio = (type: "correct" | "miss" | "typing") => {
@@ -64,6 +74,7 @@ const Nishida = () => {
 
     const inputKey = event.key;
     const currentGroupAlpList = sushiList[showWordIndex].romaji[groupAlpIndex]; // ローマ字の候補リスト
+    console.log("チェック機構 showWordIndex: ", showWordIndex);
 
     if (inputKey === " " || inputKey === "Enter") return;
 
@@ -73,6 +84,7 @@ const Nishida = () => {
 
     // groupAlpInputの入力の正解判定に使用
     let isInputCorrect = false;
+    console.log("入力文字:", wordInputAll);
 
     for (
       let candidateIndex = 0;
@@ -80,6 +92,7 @@ const Nishida = () => {
       candidateIndex++
     ) {
       const candidateGroupAlp = currentGroupAlpList[candidateIndex];
+      console.log("チェック機構 アルファベット候補:", candidateGroupAlp);
 
       // 正しい入力が部分一致するかチェック
       if (candidateGroupAlp.startsWith(groupAlpInput)) {
@@ -140,10 +153,11 @@ const Nishida = () => {
 
   // 1つの単語が完了して、次の単語のセットアップ関数
   const moveToNextWord = () => {
-    const nextIndex = Math.floor(Math.random() * sushiList.length);
-    // const nextIndex = (showWordIndex + 1) % sushiList.length; // 順番通りに取得
+    // const nextIndex = Math.floor(Math.random() * sushiList.length);
+    const nextIndex = (showWordIndex + 1) % sushiList.length; // 順番通りに取得
     setShowWordIndex(nextIndex);
     setGroupAlpIndex(0);
+    setTypeGroupAlp("");
     setTypedWord("");
     setMessage(`${sushiList[nextIndex].japanese}`);
     // setShowRomaji(`${sushiList[nextIndex].romaji}`);
@@ -151,6 +165,14 @@ const Nishida = () => {
     setRecordCandidateIndexList(
       Array(sushiList[nextIndex].romaji.length).fill(0)
     ); // romajiの長さ分の0配列で初期化
+    setAnimationKey((prevKey) => (prevKey + 1) % questionItemList.length); //画像の個数分animationkeyを変更することでアニメーション再スタート
+    setAnimationTimeLeft(0);
+
+    console.log(
+      "moveToNextWord アルファベット候補:",
+      sushiList[nextIndex].romaji[0]
+    );
+    console.log("moveToNextWord内部 showWordIndex: ", showWordIndex);
   };
 
   // リセット関数
@@ -188,7 +210,25 @@ const Nishida = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isGameStarted, typedWord, isGameCompleted]);
+  }, [isGameStarted, typedWord, isGameCompleted, showWordIndex]);
+
+  // 出題アイテムタイマー
+  useEffect(() => {
+    if (!isGameStarted || isGameCompleted) return;
+
+    if (animationTimeLeft < DEFAULT_ANIMATION_TIME) {
+      // const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
+      // return () => clearTimeout(timer);
+      const timer = setTimeout(() => {
+        // console.log("animationTimeLeft", animationTimeLeft);
+        setAnimationTimeLeft((prev) => prev + 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      moveToNextWord();
+      console.log("出題タイマー内：moveToNextWord()");
+    }
+  }, [isGameStarted, animationTimeLeft, isGameCompleted]);
 
   // TODO: styleはchatGPTに本当に適当に任せた
   return (
@@ -201,66 +241,60 @@ const Nishida = () => {
         <div>
           サーヤ
           <Image
-            src="/saya.png"
+            src="/animations/saya.png"
             width={200}
             height={200}
             alt="Picture of the author"
           />
         </div>
-        <div>
+        <div className="relative w-full">
+          <div className="w-full h-20 bg-gray-200 shadow-2xl"></div>
+          <div
+            key={animationKey} // アニメーションを再実行するためのキー
+            className="absolute top-4 z-30"
+            style={{
+              animation: `roll-in-left 0.6s ease both, scroll-item ${animationTime}s linear 0.6s, roll-out-right 0.6s ease ${
+                animationTime + 0.6
+              }s`,
+            }}
+          >
+            {isGameStarted ? (
+              <Image
+                src={`${questionItemList[animationKey].path}`}
+                width={100}
+                height={100}
+                alt="Picture of the author"
+                className="rounded-xl"
+              />
+            ) : (
+              <></>
+            )}
+          </div>
           <section className="wrapper">
-            <div className="flex loop loop_right_double">
-              <Image
-                src="/belt.png"
-                alt="scrolling"
-                width={2000}
-                height={150}
-                className="h-[150px] w-[1000px]"
-              />
-              <Image
-                src="/belt.png"
-                alt="scrolling"
-                width={2000}
-                height={150}
-                className="h-[150px] w-[1000px]"
-              />
-              <Image
-                src="/belt.png"
-                alt="scrolling"
-                width={2000}
-                height={150}
-                className="h-[150px] w-[1000px]"
-              />
+            <div className="flex loop loop-right-double">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <span key={index}>
+                  <div className="w-20 h-16 bg-gray-400 border-r-2 border-gray-900 rounded-r-full"></div>
+                  <div className="w-20 h-6 bg-gray-500 border-l-2 border-gray-900"></div>
+                </span>
+              ))}
             </div>
-            <div className="flex loop loop_right_double">
-              <Image
-                src="/belt.png"
-                alt="scrolling"
-                width={2000}
-                height={150}
-                className="h-[150px] w-[1000px]"
-              />
-              <Image
-                src="/belt.png"
-                alt="scrolling"
-                width={2000}
-                height={150}
-                className="h-[150px] w-[1000px]"
-              />
-              <Image
-                src="/belt.png"
-                alt="scrolling"
-                width={2000}
-                height={150}
-                className="h-[150px] w-[1000px]"
-              />
+            <div className="flex loop loop-right-double">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <span key={index}>
+                  <div className="relative w-20 h-16 bg-gray-400 border-r-2 border-gray-900 rounded-r-full"></div>
+                  <div className="w-20 h-6 bg-gray-500 border-l-2 border-gray-900"></div>
+                </span>
+              ))}
             </div>
           </section>
+          <div className="conveyor-belt-below w-full h-28 bg-gray-300"></div>
+          <div className="w-full h-20 bg-gray-400"></div>
         </div>
         <div>
-          ニシダ
+          <div className="shadow-2xl">ニシダ</div>
           <Image
-            src="/nishida.png"
+            src="/animations/nishida.png"
             width={200}
             height={200}
             alt="Picture of the author"

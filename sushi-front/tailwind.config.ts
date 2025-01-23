@@ -59,15 +59,46 @@ export default {
       animation: {
         scroll: "scroll 5s linear infinite",
         "scroll-left": "scroll-left 5s linear infinite",
+        "scroll-item": `
+          roll-in-left 0.6s ease both, 
+          scroll-item 5s linear 0.6s, 
+          roll-out-right 0.6s ease 5.6s 
+        `,
+        "roll-in-left": "roll-in-left 0.6s ease both",
+        "roll-out-right": "roll-out-right 0.6s ease both",
       },
       keyframes: {
         scroll: {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(0)" },
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(100%)" },
         },
         "scroll-left": {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-100%)" },
+        },
+        "scroll-item": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(300%)" },
+        },
+        "roll-in-left": {
+          "0%": {
+            transform: "translateX(-100%) rotate(-540deg)",
+            opacity: "0",
+          },
+          to: {
+            transform: "translateX(0) rotate(0deg)",
+            opacity: "1",
+          },
+        },
+        "roll-out-right": {
+          "0%": {
+            transform: "translateX(300%) rotate(0deg)",
+            opacity: "1",
+          },
+          to: {
+            transform: "translateX(400%) rotate(540deg)",
+            opacity: "0",
+          },
         },
       },
     },

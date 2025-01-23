@@ -81,36 +81,9 @@ body {
 .wrapper {
   display: flex;
   width: 400px;
-  background: #55c500;
   overflow: hidden;
-  margin-bottom: 24px;
-}
-
-@keyframes loop_animation_right {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes loop_animation_left {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes loop_animation_left_double {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
+  /* margin-bottom: 24px; */
+  @apply bg-gray-400;
 }
 
 @keyframes loop_animation_right_double {
@@ -122,23 +95,11 @@ body {
   }
 }
 
-.loop_right {
-  animation: loop_animation_right 3s linear infinite;
-  white-space: nowrap;
-  width: 100%;
-}
-
-.loop_left {
-  animation: loop_animation_left 3s linear infinite;
-  width: 100%;
-}
-
-.loop_left_double {
-  animation: loop_animation_left_double 3s linear infinite;
-  white-space: nowrap;
-}
-
-.loop_right_double {
+.loop-right-double {
   animation: loop_animation_right_double 3s linear infinite;
   white-space: nowrap;
+}
+
+.conveyor-belt-below {
+  box-shadow: inset 0px 15px 15px rgba(0, 0, 0, 0.6);
 }
