@@ -6,7 +6,7 @@ import { audioPaths } from "@/utils/audioPath";
 import Image from "next/image";
 import { bombImageItemList } from "@/consts/bombImageItemList";
 
-const TIMER = 13; // 1ゲームのゲーム時間
+const TIMER = 60; // 1ゲームのゲーム時間
 const DEFAULT_ANIMATION_TIME = 5; // 1つの問題の時間
 
 const Nishida = () => {
