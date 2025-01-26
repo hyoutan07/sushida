@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import createSushiList from './CreateSushiList';
+import createSushiList from '../../utils/createSushiList';
 import { validateInput } from '@/utils/sushiVadationInput';
 
 interface SushiList {

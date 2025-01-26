@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 
 const Header = () => {
@@ -9,10 +7,10 @@ const Header = () => {
         Nishida
       </Link>
       <nav className="space-x-4">
-        <Link href="/addWord" className="hover:underline">
+        <Link href="/addSushi" className="hover:underline">
           新規登録
         </Link>
-        <Link href="/sushiList" className="hover:underline">
+        <Link href="/manageSushi" className="hover:underline">
           リスト確認
         </Link>
       </nav>

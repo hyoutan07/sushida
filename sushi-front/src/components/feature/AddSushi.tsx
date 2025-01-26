@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import createSushiList from './CreateSushiList';
+import createSushiList from '../../utils/createSushiList';
 import { validateInput } from '@/utils/sushiVadationInput';
 
-const AddWord = () => {
+const AddSushi = () => {
   const [inputJapanese, setInputJapanese] = useState<string>('');
   const [inputHiragana, setInputHiragana] = useState<string>('');
   const [alertMessage, setAlertMessage] = useState<string>('');
@@ -76,4 +76,4 @@ const AddWord = () => {
   );
 };
 
-export default AddWord;
+export default AddSushi;

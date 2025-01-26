@@ -1,5 +1,3 @@
-'use client';
-
 import { hiraToRomajiList } from '@/utils/hiraToRomajiList';
 
 interface newSushiList {
