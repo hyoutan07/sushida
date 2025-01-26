@@ -7,9 +7,12 @@ import Image from "next/image";
 import { bombImageItemList } from "@/consts/bombImageItemList";
 
 const TIMER = 60; // 1ゲームのゲーム時間
-const DEFAULT_ANIMATION_TIME = 5; // 1つの問題の時間
 
-const Nishida = () => {
+type Props = {
+  animationRatio: number;
+};
+
+const Nishida: React.FC<Props> = ({ animationRatio }) => {
   // 入力文字関係
   const [showWordIndex, setShowWordIndex] = useState(0); // 現在の単語インデックス
   const [typedWord, setTypedWord] = useState(""); // 現在の入力
@@ -44,7 +47,7 @@ const Nishida = () => {
   const [isGameCompleted, setIsGameCompleted] = useState(false); // ゲームが終了したか
 
   // アニメーション任意時間実行
-  const [animationTime, setAnimationTime] = useState(DEFAULT_ANIMATION_TIME); // デフォルトの時間（秒）
+  const [animationTime, setAnimationTime] = useState(0); // デフォルトの時間（秒）
   const [bombImageIndex, setBombImageIndex] = useState(0); // 爆弾イメージリストのインデックス (アニメーションの再実行のkeyに指定)
 
   // Audio関数
@@ -160,7 +163,8 @@ const Nishida = () => {
       Array(sushiList[nextIndex].romaji.length).fill(0)
     ); // romajiの長さ分の0配列で初期化
     setBombImageIndex((prevKey) => (prevKey + 1) % bombImageItemList.length); //animationKeyを変更することでアニメーション再スタート
-    setAnimationTimeLeft(0);
+    setAnimationTime(sushiList[nextIndex].hiragana.length * animationRatio); // 問題の文字の長さごとに可変
+    setAnimationTimeLeft(0); // 問題のタイマーをリセット
   };
 
   // リセット関数
@@ -204,7 +208,7 @@ const Nishida = () => {
   useEffect(() => {
     if (!isGameStarted || isGameCompleted) return;
 
-    if (animationTimeLeft < DEFAULT_ANIMATION_TIME) {
+    if (animationTimeLeft < animationTime) {
       const timer = setTimeout(() => {
         setAnimationTimeLeft((prev) => prev + 1);
       }, 1000);
