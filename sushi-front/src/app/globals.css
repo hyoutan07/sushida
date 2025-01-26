@@ -103,3 +103,74 @@ body {
 .conveyor-belt-below {
   box-shadow: inset 0px 15px 15px rgba(0, 0, 0, 0.6);
 }
+
+/* JS動的アニメーション */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes scroll-item {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+@keyframes roll-in-left {
+  0% {
+    transform: translateX(-100%) rotate(-540deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes roll-out-right {
+  0% {
+    transform: translateX(300%) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400%) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+.scroll {
+  animation: scroll 5s linear infinite;
+}
+
+.scroll-left {
+  animation: scroll-left 5s linear infinite;
+}
+
+.scroll-item {
+  animation: roll-in-left 0.6s ease both, scroll-item 5s linear 0.6s,
+    roll-out-right 0.6s ease 5.6s;
+}
+
+.roll-in-left {
+  animation: roll-in-left 0.6s ease both;
+}
+
+.roll-out-right {
+  animation: roll-out-right 0.6s ease both;
+}
