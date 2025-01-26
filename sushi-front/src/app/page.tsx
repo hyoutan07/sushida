@@ -3,7 +3,7 @@ import Nishida from "@/components/feature/Nishida";
 
 export default function Home() {
   const NishidaProps = {
-    animationRatio: 0.2,
+    animationRatio: 0.3,
   };
   return (
     <div>

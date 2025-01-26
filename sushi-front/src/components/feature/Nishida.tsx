@@ -8,6 +8,7 @@ import { bombImageItemList } from "@/consts/bombImageItemList";
 import { getSushiRomajiLength } from "@/utils/getSushiRomajiLength";
 
 const TIMER = 60; // 1ゲームのゲーム時間
+const MIN_TYPING_TIME = 3200 // ミリ秒
 
 type Props = {
   animationRatio: number;
@@ -165,7 +166,7 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
     ); // romajiの長さ分の0配列で初期化
     setBombImageIndex((prevKey) => (prevKey + 1) % bombImageItemList.length); //animationKeyを変更することでアニメーション再スタート
     setAnimationTime(
-      getSushiRomajiLength(sushiList[nextIndex]) * animationRatio
+      getSushiRomajiLength(sushiList[nextIndex]) * animationRatio * 1000 + 600 > MIN_TYPING_TIME? getSushiRomajiLength(sushiList[nextIndex]) * animationRatio * 1000 + 600 : MIN_TYPING_TIME //ミリ秒単位
     ); // 問題の文字の長さごとに可変
     setAnimationTimeLeft(0); // 問題のタイマーをリセット
   };
@@ -213,8 +214,8 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
 
     if (animationTimeLeft < animationTime) {
       const timer = setTimeout(() => {
-        setAnimationTimeLeft((prev) => prev + 1);
-      }, 1000);
+        setAnimationTimeLeft((prev) => prev + 100);
+      }, 100);
       return () => clearTimeout(timer);
     } else {
       moveToNextWord();
@@ -243,9 +244,10 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
             key={bombImageIndex} // アニメーションを再実行するためのキー
             className="absolute top-4 z-30"
             style={{
-              animation: `roll-in-left 0.6s ease both, scroll-item ${animationTime}s linear 0.6s, roll-out-right 0.6s ease ${
-                animationTime + 0.6
+              animation: `roll-in-left 0.4s ease both, scroll-item ${animationTime / 1000 - 0.8}s linear 0.4s, roll-out-right 0.4s ease ${
+                animationTime / 1000 - 0.4
               }s`,
+              animationFillMode: "forwards", // アニメーション終了後に状態を保持
             }}
           >
             {isGameStarted && !isGameCompleted ? (
