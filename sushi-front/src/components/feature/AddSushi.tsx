@@ -35,7 +35,7 @@ const AddSushi = () => {
       // ローカルストレージに保存
       localStorage.setItem('userCustomSushiList', JSON.stringify(sushiList));
 
-      console.log('ローカルストレージに保存しました:', sushiList);
+      // console.log('ローカルストレージに保存しました:', sushiList);
 
       // フィールドをリセット
       setInputJapanese('');
