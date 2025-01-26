@@ -5,6 +5,7 @@ import { sushiList } from "@/utils/sushiList";
 import { audioPaths } from "@/utils/audioPath";
 import Image from "next/image";
 import { bombImageItemList } from "@/consts/bombImageItemList";
+import { getSushiRomajiLength } from "@/utils/getSushiRomajiLength";
 
 const TIMER = 60; // 1ゲームのゲーム時間
 
@@ -163,7 +164,9 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
       Array(sushiList[nextIndex].romaji.length).fill(0)
     ); // romajiの長さ分の0配列で初期化
     setBombImageIndex((prevKey) => (prevKey + 1) % bombImageItemList.length); //animationKeyを変更することでアニメーション再スタート
-    setAnimationTime(sushiList[nextIndex].hiragana.length * animationRatio); // 問題の文字の長さごとに可変
+    setAnimationTime(
+      getSushiRomajiLength(sushiList[nextIndex]) * animationRatio
+    ); // 問題の文字の長さごとに可変
     setAnimationTimeLeft(0); // 問題のタイマーをリセット
   };
 
