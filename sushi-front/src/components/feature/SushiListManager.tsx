@@ -8,6 +8,7 @@ interface SushiList {
   japanese: string;
   hiragana: string;
   romaji: string[][];
+  wordLen: number;
 }
 
 const SushiListManager = () => {
@@ -62,65 +63,73 @@ const SushiListManager = () => {
   };
 
   return (
-    <div>
-      <h2>Sushi List Manager</h2>
-      <ul>
+    <div className="bg-pink-200 min-h-screen flex items-center justify-center p-6">
+      <div className="bg-white p-6 rounded-lg shadow-lg border-4 border-pink-500 text-center w-[1200px]">
+        <h1 className="text-pink-600 text-3xl font-bold mb-4">ワード管理</h1>
+
         {sushiList.length > 0 ? (
-          sushiList.map((sushi, index) => (
-            <li key={index} className="mb-4">
-              {editingIndex === index ? (
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="flex flex-col w-6/12 gap-2">
+          <ul className="space-y-4">
+            {sushiList.map((sushi, index) => (
+              <li key={index} className="bg-pink-100 p-4 rounded-lg shadow-md border border-pink-300">
+                {editingIndex === index ? (
+                  <div className="flex flex-col space-y-4">
+                    <label className="text-gray-700 font-bold text-left">日本語の単語</label>
                     <textarea
                       value={editingJapanese}
                       onChange={(e) => setEditingJapanese(e.target.value)}
-                      className="border p-2 w-full h-24 resize-y"
+                      className="w-full h-24 p-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-lg"
                     />
+
+                    <label className="text-gray-700 font-bold text-left">ひらがな</label>
                     <textarea
                       value={editingHiragana}
                       onChange={(e) => setEditingHiragana(e.target.value)}
-                      className="border p-2 w-full h-24 resize-y"
+                      className="w-full h-24 p-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-lg"
                     />
+
+                    <div className="flex space-x-4 mt-2">
+                      <button
+                        onClick={handleSaveClick}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 w-full"
+                      >
+                        保存
+                      </button>
+                      <button
+                        onClick={() => setEditingIndex(null)}
+                        className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-600 w-full"
+                      >
+                        キャンセル
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={handleSaveClick}
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
-                    >
-                      保存
-                    </button>
-                    <button
-                      onClick={() => setEditingIndex(null)}
-                      className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
-                    >
-                      キャンセル
-                    </button>
-                    {alertMessage && <div className="text-red-500">{alertMessage}</div>}
+                ) : (
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold text-gray-800">{sushi.japanese}</span>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditClick(index)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded-lg shadow-md hover:bg-blue-600"
+                      >
+                        編集
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(index)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-lg shadow-md hover:bg-red-600"
+                      >
+                        削除
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div>
-                  <span className="mr-4">{sushi.japanese}</span>
-                  <button
-                    onClick={() => handleEditClick(index)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700 mr-2"
-                  >
-                    編集
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(index)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700"
-                  >
-                    削除
-                  </button>
-                </div>
-              )}
-            </li>
-          ))
+                )}
+              </li>
+            ))}
+          </ul>
         ) : (
-          <p>寿司リストがありません。</p>
+          <p className="text-gray-600">寿司リストがありません。</p>
         )}
-      </ul>
+
+        {alertMessage && <div className="text-red-500 mt-4">{alertMessage}</div>}
+      </div>
     </div>
   );
 };

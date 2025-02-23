@@ -4,6 +4,7 @@ interface newSushiList {
 	japanese: string;
 	hiragana: string;
 	romaji: string[][];
+	wordLen: number;
 }
 
 const createSushiList = (japanese: string, hiragana: string, setAlertMessage: (message: string) => void): newSushiList => {
@@ -36,6 +37,7 @@ const createSushiList = (japanese: string, hiragana: string, setAlertMessage: (m
 		japanese,
 		hiragana,
 		romaji: romajiList,
+		wordLen: hiragana.length
 	};
 };
 

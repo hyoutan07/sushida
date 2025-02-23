@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Nishida from "./Nishida";
 import { FaCog } from "react-icons/fa"; // 歯車アイコン
-import { SushiList } from "@/types/image";
+import { SushiList } from "@/types/sushiList";
 import { defaultSushiList } from "@/utils/sushiList";
 import WordManagementModal from "../ui/WordManagementModal";
+import { generateSushiList } from "@/utils/generateSushiList";
 
 const DifficultySelection = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState("初級");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSilent, setIsSilent] = useState(false);
   const [sushiList, setSushiList] = useState<SushiList>([]);
+  const [filteredSushiList, setFilteredSushiList] = useState<SushiList>([]);
   const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの開閉状態
 
   const difficulties = [
-    { name: "初級", description: "文字数：2〜7文字\n制限時間：60秒", animationRatio: 1 },
-    { name: "中級", description: "文字数：5〜10文字\n制限時間：90秒", animationRatio: 1.5 },
+    { name: "初級", description: "文字数：2〜7文字\n制限時間：60秒", animationRatio: 3.0 },
+    { name: "中級", description: "文字数：5〜10文字\n制限時間：90秒", animationRatio: 2.5 },
     { name: "上級", description: "文字数：9〜14文字\n制限時間：120秒", animationRatio: 2 },
-    { name: "カスタム", description: "設定可能な難易度\n自由にカスタマイズ", animationRatio: 1.2 },
   ];
 
   // ローカルストレージからsushiListを取得
@@ -27,13 +28,19 @@ const DifficultySelection = () => {
     } else {
       localStorage.setItem("userCustomSushiList", JSON.stringify(defaultSushiList));
       setSushiList(defaultSushiList);
-      console.log("登録!");
     }
   }, []);
 
   const handleStart = (silent: boolean) => {
     setIsSilent(silent);
+    // const selected = difficulties.find(d => d.name === selectedDifficulty);
+    
+    // 選択された難易度に応じたsushiListを生成
+    const difficultySushiList = generateSushiList(selectedDifficulty, sushiList);
+    
     setIsPlaying(true);
+  
+    setFilteredSushiList(difficultySushiList); // フィルタリングしたリストをセット
   };
 
   if (isPlaying) {
@@ -42,7 +49,7 @@ const DifficultySelection = () => {
       <Nishida
         animationRatio={selected ? selected.animationRatio : 1}
         isSilent={isSilent}
-        sushiList={sushiList}
+        sushiList={filteredSushiList}
         onReset={() => setIsPlaying(false)}
       />
     );
