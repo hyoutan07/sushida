@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch } from "react";
 import { sushiList } from "@/utils/sushiList";
 import { audioPaths } from "@/utils/audioPath";
 import Image from "next/image";
@@ -8,7 +8,7 @@ import { bombImageItemList } from "@/consts/bombImageItemList";
 import { getSushiRomajiLength } from "@/utils/getSushiRomajiLength";
 
 const TIMER = 60; // 1ゲームのゲーム時間
-const MIN_TYPING_TIME = 3200 // ミリ秒
+const MIN_TYPING_TIME = 3200; // ミリ秒
 
 type Props = {
   animationRatio: number;
@@ -30,6 +30,10 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
   //  romaji
   //  groupAlpIndex[]
   //    candidateIndex[]
+
+  // 顔画像
+  const [nishidaFaceImage, setNishidaFaceImage] = useState("default");
+  const [sayaFaceImage, setSayaFaceImage] = useState("default");
 
   // タイマー
   const [timeLeft, setTimeLeft] = useState(TIMER); // 残り時間
@@ -57,6 +61,25 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
     const audio = new Audio(audioPaths[type]);
     audio.play();
   };
+
+  // 顔画像を一定時間だけ変える関数
+  function changeFaceImage(
+    person: string,
+    faceType: string,
+    changeInterval: number = 500
+  ) {
+    if (person === "saya") {
+      setSayaFaceImage(faceType);
+      setTimeout(() => {
+        setSayaFaceImage("default");
+      }, changeInterval);
+    } else if (person === "nishida") {
+      setNishidaFaceImage(faceType);
+      setTimeout(() => {
+        setNishidaFaceImage("default");
+      }, changeInterval);
+    }
+  }
 
   // TODO: 後できれいにする
   const handleKeyDown = (event: KeyboardEvent) => {
@@ -120,6 +143,7 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
           if (groupAlpIndex + 1 === sushiList[showWordIndex].romaji.length) {
             setScore((prev) => prev + 1);
             playAudio("correct");
+            changeFaceImage("nishida", "currect");
             moveToNextWord();
           }
         }
@@ -132,6 +156,8 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
     if (!isInputCorrect) {
       setMistypedKeyCount((prev) => prev + 1);
       playAudio("miss"); // ミスタイプ時にエラー音再生
+      changeFaceImage("saya", "miss");
+      changeFaceImage("nishida", "miss");
     }
   };
 
@@ -166,7 +192,11 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
     ); // romajiの長さ分の0配列で初期化
     setBombImageIndex((prevKey) => (prevKey + 1) % bombImageItemList.length); //animationKeyを変更することでアニメーション再スタート
     setAnimationTime(
-      getSushiRomajiLength(sushiList[nextIndex]) * animationRatio * 1000 + 600 > MIN_TYPING_TIME? getSushiRomajiLength(sushiList[nextIndex]) * animationRatio * 1000 + 600 : MIN_TYPING_TIME //ミリ秒単位
+      getSushiRomajiLength(sushiList[nextIndex]) * animationRatio * 1000 + 600 >
+        MIN_TYPING_TIME
+        ? getSushiRomajiLength(sushiList[nextIndex]) * animationRatio * 1000 +
+            600
+        : MIN_TYPING_TIME //ミリ秒単位
     ); // 問題の文字の長さごとに可変
     setAnimationTimeLeft(0); // 問題のタイマーをリセット
   };
@@ -231,12 +261,22 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
       <div className="m-5 p-5 flex gap-8 justify-center items-center">
         <div>
           サーヤ
-          <Image
-            src="/animations/saya.png"
-            width={200}
-            height={200}
-            alt="Picture of the author"
-          />
+          {sayaFaceImage === "default" && (
+            <Image
+              src="/animations/saya.png"
+              width={800}
+              height={800}
+              alt="Picture of the author"
+            />
+          )}
+          {sayaFaceImage === "miss" && (
+            <Image
+              src={`/animations/saya_miss.gif`}
+              width={400}
+              height={400}
+              alt="Picture of the author"
+            />
+          )}
         </div>
         <div className="relative w-full">
           <div className="w-full h-20 bg-gray-200 shadow-2xl"></div>
@@ -244,7 +284,9 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
             key={bombImageIndex} // アニメーションを再実行するためのキー
             className="absolute top-4 z-30"
             style={{
-              animation: `roll-in-left 0.4s ease both, scroll-item ${animationTime / 1000 - 0.8}s linear 0.4s, roll-out-right 0.4s ease ${
+              animation: `roll-in-left 0.4s ease both, scroll-item ${
+                animationTime / 1000 - 0.8
+              }s linear 0.4s, roll-out-right 0.4s ease ${
                 animationTime / 1000 - 0.4
               }s`,
               animationFillMode: "forwards", // アニメーション終了後に状態を保持
@@ -285,12 +327,30 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
         </div>
         <div>
           <div className="shadow-2xl">ニシダ</div>
-          <Image
-            src="/animations/nishida.png"
-            width={200}
-            height={200}
-            alt="Picture of the author"
-          />
+          {nishidaFaceImage === "default" && (
+            <Image
+              src="/animations/nishida.png"
+              width={800}
+              height={800}
+              alt="Picture of the author"
+            />
+          )}
+          {nishidaFaceImage === "miss" && (
+            <Image
+              src={`/animations/nishida_miss.gif`}
+              width={400}
+              height={400}
+              alt="Picture of the author"
+            />
+          )}
+          {nishidaFaceImage === "currect" && (
+            <Image
+              src={`/animations/nishida_currect.gif`}
+              width={400}
+              height={400}
+              alt="Picture of the author"
+            />
+          )}
         </div>
       </div>
 
