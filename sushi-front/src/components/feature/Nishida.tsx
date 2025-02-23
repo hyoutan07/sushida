@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { sushiList } from "@/utils/sushiList";
+// import { sushiList } from "@/utils/sushiList";
 import { audioPaths } from "@/utils/audioPath";
 import Image from "next/image";
 import { bombImageItemList } from "@/consts/bombImageItemList";
 import { getSushiRomajiLength } from "@/utils/getSushiRomajiLength";
+import { SushiList } from "@/types/image";
 
 const TIMER = 10; // 1ゲームのゲーム時間
 const MIN_TYPING_TIME = 3200 // ミリ秒
@@ -13,10 +14,11 @@ const MIN_TYPING_TIME = 3200 // ミリ秒
 type Props = {
   animationRatio: number;
   isSilent: boolean;
+  sushiList: SushiList
   onReset: () => void;
 };
 
-const Nishida: React.FC<Props> = ({ animationRatio, isSilent, onReset }) => {
+const Nishida: React.FC<Props> = ({ animationRatio, isSilent, sushiList, onReset }) => {
   // 入力文字関係
   const [showWordIndex, setShowWordIndex] = useState(0); // 現在の単語インデックス
   const [typedWord, setTypedWord] = useState(""); // 現在の入力

@@ -1,6 +1,6 @@
 'use client';
 
-import DifficultySelection from "@/components/feature/DiffultySelection";
+import DifficultySelection from "@/components/feature/DifficultySelection";
 
 const DifficultyLevelPage = () => {
   return (

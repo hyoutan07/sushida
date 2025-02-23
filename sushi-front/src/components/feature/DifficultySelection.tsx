@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Nishida from "./Nishida";
+import { FaCog } from "react-icons/fa"; // 歯車アイコン
+import { SushiList } from "@/types/image";
+import { defaultSushiList } from "@/utils/sushiList";
+import WordManagementModal from "../ui/WordManagementModal";
 
 const DifficultySelection = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState("初級");
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSilent, setIsSilent] = useState(false); // 静音プレイのステート
+  const [isSilent, setIsSilent] = useState(false);
+  const [sushiList, setSushiList] = useState<SushiList>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの開閉状態
 
   const difficulties = [
     { name: "初級", description: "文字数：2〜7文字\n制限時間：60秒", animationRatio: 1 },
@@ -12,6 +18,18 @@ const DifficultySelection = () => {
     { name: "上級", description: "文字数：9〜14文字\n制限時間：120秒", animationRatio: 2 },
     { name: "カスタム", description: "設定可能な難易度\n自由にカスタマイズ", animationRatio: 1.2 },
   ];
+
+  // ローカルストレージからsushiListを取得
+  useEffect(() => {
+    const storedSushiList = localStorage.getItem("userCustomSushiList");
+    if (storedSushiList) {
+      setSushiList(JSON.parse(storedSushiList));
+    } else {
+      localStorage.setItem("userCustomSushiList", JSON.stringify(defaultSushiList));
+      setSushiList(defaultSushiList);
+      console.log("登録!");
+    }
+  }, []);
 
   const handleStart = (silent: boolean) => {
     setIsSilent(silent);
@@ -23,14 +41,24 @@ const DifficultySelection = () => {
     return (
       <Nishida
         animationRatio={selected ? selected.animationRatio : 1}
-        isSilent={isSilent} // 静音プレイ情報を渡す
+        isSilent={isSilent}
+        sushiList={sushiList}
         onReset={() => setIsPlaying(false)}
       />
     );
   }
 
   return (
-    <div className="bg-pink-200 min-h-screen flex flex-col items-center justify-center p-4 border-4 border-pink-500">
+    <div className="bg-pink-200 min-h-screen flex flex-col items-center justify-center p-4 border-4 border-pink-500 relative">
+      {/* 歯車ボタン（ワード管理） */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="absolute top-4 right-4 text-3xl text-gray-700 hover:text-gray-900"
+      >
+        <FaCog />
+      </button>
+
+      {/* 難易度選択エリア */}
       <h1 className="text-pink-700 text-4xl font-bold mb-6">難易度を選んでください</h1>
       <div className="flex space-x-4 bg-pink-300 p-2 rounded-lg">
         {difficulties.map((difficulty) => (
@@ -67,6 +95,9 @@ const DifficultySelection = () => {
           静音プレイ
         </button>
       </div>
+
+      {/* ワード管理モーダル */}
+      <WordManagementModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

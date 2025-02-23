@@ -1,4 +1,4 @@
-export const sushiList = [
+export const defaultSushiList = [
   {
     japanese: 'マサチューセッツ工科大学',
     hiragana: 'まさちゅーせっつこうかだいがく',
