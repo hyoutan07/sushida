@@ -7,14 +7,16 @@ import Image from "next/image";
 import { bombImageItemList } from "@/consts/bombImageItemList";
 import { getSushiRomajiLength } from "@/utils/getSushiRomajiLength";
 
-const TIMER = 60; // 1ゲームのゲーム時間
+const TIMER = 10; // 1ゲームのゲーム時間
 const MIN_TYPING_TIME = 3200 // ミリ秒
 
 type Props = {
   animationRatio: number;
+  isSilent: boolean;
+  onReset: () => void;
 };
 
-const Nishida: React.FC<Props> = ({ animationRatio }) => {
+const Nishida: React.FC<Props> = ({ animationRatio, isSilent, onReset }) => {
   // 入力文字関係
   const [showWordIndex, setShowWordIndex] = useState(0); // 現在の単語インデックス
   const [typedWord, setTypedWord] = useState(""); // 現在の入力
@@ -54,6 +56,7 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
 
   // Audio関数
   const playAudio = (type: "correct" | "miss" | "typing") => {
+    if (isSilent === true) return
     const audio = new Audio(audioPaths[type]);
     audio.play();
   };
@@ -325,12 +328,20 @@ const Nishida: React.FC<Props> = ({ animationRatio }) => {
       </div>
 
       {isGameCompleted && (
-        <button
-          onClick={handleReset}
-          className="text-lg px-4 py-2 mt-5 rounded-lg bg-green-500 text-white border-none cursor-pointer"
-        >
-          リセット
-        </button>
+        <>
+          <button
+            onClick={handleReset}
+            className="text-lg px-4 py-2 mt-5 rounded-lg bg-green-500 text-white border-none cursor-pointer"
+          >
+            リセット
+          </button>
+          <button
+            onClick={onReset}
+            className="text-lg px-4 py-2 mt-5 rounded-lg bg-pink-500 text-white border-none cursor-pointer"
+          >
+            難易度選択へ戻る
+          </button>
+        </>
       )}
     </div>
   );

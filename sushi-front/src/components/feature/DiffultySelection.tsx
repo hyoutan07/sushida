@@ -1,0 +1,74 @@
+import React, { useState } from "react";
+import Nishida from "./Nishida";
+
+const DifficultySelection = () => {
+  const [selectedDifficulty, setSelectedDifficulty] = useState("初級");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isSilent, setIsSilent] = useState(false); // 静音プレイのステート
+
+  const difficulties = [
+    { name: "初級", description: "文字数：2〜7文字\n制限時間：60秒", animationRatio: 1 },
+    { name: "中級", description: "文字数：5〜10文字\n制限時間：90秒", animationRatio: 1.5 },
+    { name: "上級", description: "文字数：9〜14文字\n制限時間：120秒", animationRatio: 2 },
+    { name: "カスタム", description: "設定可能な難易度\n自由にカスタマイズ", animationRatio: 1.2 },
+  ];
+
+  const handleStart = (silent: boolean) => {
+    setIsSilent(silent);
+    setIsPlaying(true);
+  };
+
+  if (isPlaying) {
+    const selected = difficulties.find(d => d.name === selectedDifficulty);
+    return (
+      <Nishida
+        animationRatio={selected ? selected.animationRatio : 1}
+        isSilent={isSilent} // 静音プレイ情報を渡す
+        onReset={() => setIsPlaying(false)}
+      />
+    );
+  }
+
+  return (
+    <div className="bg-pink-200 min-h-screen flex flex-col items-center justify-center p-4 border-4 border-pink-500">
+      <h1 className="text-pink-700 text-4xl font-bold mb-6">難易度を選んでください</h1>
+      <div className="flex space-x-4 bg-pink-300 p-2 rounded-lg">
+        {difficulties.map((difficulty) => (
+          <button
+            key={difficulty.name}
+            className={`px-6 py-2 font-bold text-lg rounded-lg shadow-md ${
+              selectedDifficulty === difficulty.name
+                ? "bg-pink-500 text-white border-2 border-pink-700"
+                : "bg-pink-100 text-pink-800 hover:bg-pink-200"
+            }`}
+            onClick={() => setSelectedDifficulty(difficulty.name)}
+          >
+            {difficulty.name}
+          </button>
+        ))}
+      </div>
+      <div className="bg-white p-6 mt-6 rounded-lg shadow-md border-4 border-pink-400 text-pink-800 w-80 text-center">
+        <h2 className="text-2xl font-bold mb-2">{selectedDifficulty}</h2>
+        <p className="text-lg whitespace-pre-line">
+          {difficulties.find(d => d.name === selectedDifficulty)?.description}
+        </p>
+      </div>
+      <div className="mt-6 flex flex-col space-y-4">
+        <button
+          onClick={() => handleStart(false)}
+          className="bg-pink-500 text-white text-xl font-bold px-6 py-3 rounded-lg shadow-md hover:bg-pink-600"
+        >
+          通常プレイ
+        </button>
+        <button
+          onClick={() => handleStart(true)}
+          className="bg-gray-500 text-white text-xl font-bold px-6 py-3 rounded-lg shadow-md hover:bg-gray-600"
+        >
+          静音プレイ
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default DifficultySelection;

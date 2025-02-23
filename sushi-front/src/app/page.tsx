@@ -1,14 +1,11 @@
 import Header from "@/components/general/Header";
-import Nishida from "@/components/feature/Nishida";
+import Opening from "@/components/feature/Opening";
 
 export default function Home() {
-  const NishidaProps = {
-    animationRatio: 0.3,
-  };
   return (
     <div>
       <Header />
-      <Nishida {...NishidaProps} />
+      <Opening />
     </div>
   );
 }
