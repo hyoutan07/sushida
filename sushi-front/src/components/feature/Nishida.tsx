@@ -6,9 +6,9 @@ import { audioPaths } from "@/utils/audioPath";
 import Image from "next/image";
 import { bombImageItemList } from "@/consts/bombImageItemList";
 import { getSushiRomajiLength } from "@/utils/getSushiRomajiLength";
-import { SushiList } from "@/types/image";
+import { SushiList } from "@/types/sushiList";
 
-const TIMER = 10; // 1ゲームのゲーム時間
+const TIMER = 60; // 1ゲームのゲーム時間
 const MIN_TYPING_TIME = 3200 // ミリ秒
 
 type Props = {

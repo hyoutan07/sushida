@@ -15,9 +15,10 @@ const DifficultySelection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // モーダルの開閉状態
 
   const difficulties = [
-    { name: "初級", description: "文字数：2〜7文字\n制限時間：60秒", animationRatio: 3.0 },
-    { name: "中級", description: "文字数：5〜10文字\n制限時間：90秒", animationRatio: 2.5 },
-    { name: "上級", description: "文字数：9〜14文字\n制限時間：120秒", animationRatio: 2 },
+    { name: "初級", description: "文字数：2〜10文字\n確率10%で長いワードが出現\n制限時間：60秒", animationRatio: 0.35 },
+    { name: "中級", description: "文字数：8〜20文字\n確率30%で長いワードが出現\n制限時間：90秒", animationRatio: 0.3 },
+    { name: "上級", description: "文字数：20〜50文字\n制限時間：120秒", animationRatio: 0.25 },
+    { name: "超級", description: "文字数：40〜文字\n制限時間：180秒", animationRatio: 0.22 },
   ];
 
   // ローカルストレージからsushiListを取得
@@ -39,6 +40,8 @@ const DifficultySelection = () => {
     const difficultySushiList = generateSushiList(selectedDifficulty, sushiList);
     
     setIsPlaying(true);
+
+    console.log(difficultySushiList);
   
     setFilteredSushiList(difficultySushiList); // フィルタリングしたリストをセット
   };
